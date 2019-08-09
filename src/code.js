@@ -4,21 +4,29 @@ figma.ui.onmessage = msg => {
   if (msg.type === 'insert-image') {
     const nodes = [];
     const node = figma.createNodeFromSvg(msg.svg);
-    node.name = 'Emoji';
-    nodes.push(node);
-    const { selection } = figma.currentPage;
-    if(selection.length > 0) {
-      node.x = selection[0].x;
-      node.y = selection[0].y
-      if (selection[0].children) {
-        node.x = selection[0].width/2;
-        node.y = selection[0].height/2
-        selection[0].appendChild(node);
+    const group = figma.group(node.children, figma.currentPage);
+    node.remove();
+    group.name = 'Emoji'
+    nodes.push(group);
+    if(figma.currentPage.selection.length > 0) {
+      const selection = figma.currentPage.selection[0];
+      group.x = selection.x;
+      group.y = selection.y
+      console.log(selection.type);
+      if (selection.type.toLowerCase() === 'frame' && selection.children) {
+        group.x = selection.width/2;
+        group.y = selection.height/2
+        selection.appendChild(group);
+      } else {
+        selection.parent.appendChild(group);
+        group.x = selection.x + selection.width + 10;
+        group.y = selection.y;
       }
-      nodes.push(selection[0])
+      nodes.push(selection)
     } else {
       nodes.push(figma.currentPage)
     }
+    figma.currentPage.selection = [group];
     figma.viewport.scrollAndZoomIntoView(nodes);
   }
 };
