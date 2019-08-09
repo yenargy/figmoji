@@ -12,7 +12,6 @@ figma.ui.onmessage = msg => {
       const selection = figma.currentPage.selection[0];
       group.x = selection.x;
       group.y = selection.y
-      console.log(selection.type);
       if (selection.type.toLowerCase() === 'frame' && selection.children) {
         group.x = selection.width/2;
         group.y = selection.height/2
