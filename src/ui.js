@@ -1,5 +1,6 @@
 import './ui.css'
 import _ from "lodash";
+import $ from "jquery";
 
 let emojiUnicodeList = [];
 
@@ -38,6 +39,16 @@ const populateEmojis = (list) => {
     }
 }
 
+$('ul.tabs li').click(function(){
+    var tab_id = $(this).attr('data-tab');
+
+    $('ul.tabs li').removeClass('current');
+    $('.tab-content').removeClass('current');
+
+    $(this).addClass('current');
+    $("#"+tab_id).addClass('current');
+})
+
 /* Fetching the unicodelist from
  * https://github.com/amio/emoji.json
  */
@@ -46,6 +57,10 @@ const fetchEmojiUnicodes = () => {
     .then(res => res.json())
     .then((emojiList) => {
         emojiUnicodeList = emojiList;
+        emojiUnicodeList = _.groupBy(emojiList, (emoji) => {
+            return emoji.category.substr(0, emoji.category.indexOf('(')).trim();
+        });
+        console.log(emojiUnicodeList);
         populateEmojis(emojiList);
     })
     .catch(() => {
@@ -75,38 +90,38 @@ const fetchImg = url => {
     });
 }
 
-// Debounce setup variables
-let typingTimer;
-let doneTypingInterval = 500;
-let searchInput = document.getElementById('search');
+// // Debounce setup variables
+// let typingTimer;
+// let doneTypingInterval = 500;
+// let searchInput = document.getElementById('search');
 
-// On keyup event listener
-searchInput.addEventListener('keyup', () => {
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(doneTyping, doneTypingInterval);
-});
+// // On keyup event listener
+// searchInput.addEventListener('keyup', () => {
+//     clearTimeout(typingTimer);
+//     typingTimer = setTimeout(doneTyping, doneTypingInterval);
+// });
 
-// After debounce function
-function doneTyping () {
-    const searchValue = searchInput.value;
-    if (searchValue) {
-        let filteredEmojiList = emojiUnicodeList.filter((element, index) =>  {
-            if (element.name.includes(searchValue) || element.category.includes(searchValue)) {
-                return true;
-            }
-            return false;
-        });
-        if (filteredEmojiList.length === 0) {
-            removeElementByClass('emoji-inner-container');
-            document.getElementById('empty-search').setAttribute('style', 'display: flex');
-        } else {
-            document.getElementById('empty-search').setAttribute('style', 'display:none');
-            populateEmojis(filteredEmojiList);
-        }
-    } else {
-        populateEmojis(emojiUnicodeList);
-    }
-}
+// // After debounce function
+// function doneTyping () {
+//     const searchValue = searchInput.value;
+//     if (searchValue) {
+//         let filteredEmojiList = emojiUnicodeList.filter((element, index) =>  {
+//             if (element.name.includes(searchValue) || element.category.includes(searchValue)) {
+//                 return true;
+//             }
+//             return false;
+//         });
+//         if (filteredEmojiList.length === 0) {
+//             removeElementByClass('emoji-inner-container');
+//             document.getElementById('empty-search').setAttribute('style', 'display: flex');
+//         } else {
+//             document.getElementById('empty-search').setAttribute('style', 'display:none');
+//             populateEmojis(filteredEmojiList);
+//         }
+//     } else {
+//         populateEmojis(emojiUnicodeList);
+//     }
+// }
 
 // Triggering unicode list call
 fetchEmojiUnicodes();
