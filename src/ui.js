@@ -1,4 +1,5 @@
 import './ui.css'
+import _ from "lodash";
 
 let emojiUnicodeList = [];
 
@@ -11,10 +12,11 @@ const removeElementByClass = elemName => {
 
 // Listing all the Emojis from the unicode list onto the view
 const populateEmojis = (list) => {
+    console.log(list);
     let emojiUnicodes = '';
     for(let i=0; i<list.length; i++) {
-        if(!emojiUnicodes.includes(twemoji.convert.fromCodePoint(list[i].codes))) {
-            emojiUnicodes += twemoji.convert.fromCodePoint(list[i].codes);
+        if(!emojiUnicodes.includes(list[i].char)) {
+            emojiUnicodes += list[i].char;
         }
     }
     removeElementByClass('emoji-inner-container');
