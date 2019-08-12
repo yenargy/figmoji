@@ -24,7 +24,6 @@ body {
 }
 
 #error {
-    display: none;
     height: 100%;
     flex-direction: column;
     justify-content: center;
@@ -33,7 +32,6 @@ body {
 }
 
 #empty-search {
-    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;

@@ -7,13 +7,16 @@ module.exports = (env, argv) => ({
   devtool: argv.mode === 'production' ? false : 'inline-source-map',
 
   entry: {
-    ui: './src/ui.js', // The entry point for your UI code
+    ui: './src/ui.jsx', // The entry point for your UI code
     code: './src/code.js', // The entry point for your plugin code
   },
 
   module: {
     rules: [
-      // Enables including CSS by doing "import './file.css'" in your TypeScript code
+      // Enables jsx stuff
+      { test: /\.(js|jsx)$/, exclude: /node_modules/, use: { loader: "babel-loader" } },
+
+      // Enables including CSS by doing "import './file.css'" in your js code
       { test: /\.css$/, loader: [{ loader: 'style-loader' }, { loader: 'css-loader' }] },
 
       // Allows you to use "<%= require('./file.svg') %>" in your HTML code to get a data URI

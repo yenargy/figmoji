@@ -1,5 +1,6 @@
 import './ui.css'
 import _ from "lodash";
+import $ from "jquery";
 
 let emojiUnicodeList = [];
 
@@ -12,7 +13,6 @@ const removeElementByClass = elemName => {
 
 // Listing all the Emojis from the unicode list onto the view
 const populateEmojis = (list) => {
-    console.log(list);
     let emojiUnicodes = '';
     for(let i=0; i<list.length; i++) {
         if(!emojiUnicodes.includes(list[i].char)) {
@@ -46,7 +46,11 @@ const fetchEmojiUnicodes = () => {
     .then(res => res.json())
     .then((emojiList) => {
         emojiUnicodeList = emojiList;
-        populateEmojis(emojiList);
+        emojiUnicodeList = _.groupBy(emojiList, (emoji) => {
+            return emoji.category.substr(0, emoji.category.indexOf('(')).trim();
+        });
+        console.log(emojiUnicodeList);
+        // populateEmojis(emojiList);
     })
     .catch(() => {
         console.log('There was an issue while fetching the emoji list');
@@ -110,3 +114,15 @@ function doneTyping () {
 
 // Triggering unicode list call
 fetchEmojiUnicodes();
+
+const btn = $('.nav');
+const info = $('.info');
+
+btn.click(function(e) {
+    e.preventDefault();
+    let index = $(this).index();
+    info.hide();
+    info.eq(index).show();
+    $('.nav').removeClass('current');
+    $(this).addClass('current');
+});
