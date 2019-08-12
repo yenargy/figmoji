@@ -1,22 +1,24 @@
 body {
-    font: 12px sans-serif;
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
     text-align: center;
-    margin: 8px 8px 0 8px;
     overflow: hidden;
+    margin: 0;
 }
-#emoji-container, .emoji-inner-container {
+#emoji-container {
     display: inline-flex;
-    max-height: 455px;
-    width: 100%;
+    max-height: 365px;
     flex-wrap: wrap;
     justify-content: flex-start;
     align-items: flex-start;
     overflow: auto;
+    padding: 0 10px;
 }
 #emoji-container .emoji {
     width: 30px;
     padding: 5px;
 }
+
 #emoji-container .emoji:hover {
     cursor: pointer;
     background-color: #f1f1f1;
@@ -82,4 +84,50 @@ body {
 
 .input:disabled {
     color: rgba(0, 0, 0, 0.3);
+}
+
+.container {
+    border-bottom: 1px solid #dedede;
+    padding: 10px;
+}
+
+.shadow {
+    box-shadow: 0px -10px 20px 5px grey
+}
+
+.tabs {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+}
+
+.tabs li {
+    background: none;
+    color: #151515;
+    display: inline-flex;
+    padding: 7px 10px;
+    cursor: pointer;
+    opacity: 0.4;
+    font-weight: bold;
+}
+.tabs li:hover {
+    opacity: 0.7;
+}
+
+.tabs .current {
+    opacity: 1;
+}
+
+.tab-content {
+    display: none;
+    padding: 15px;
+}
+
+.tab-content.current {
+    display: inherit;
 }

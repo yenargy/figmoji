@@ -1,29 +1,42 @@
 import './ui.css'
 import _ from "lodash";
+import $ from "jquery";
 
 let emojiUnicodeList = [];
 
-const removeElementByClass = elemName => {
-    var elem = document.getElementsByClassName(elemName);
-    if (elem.length > 0) {
-        elem[0].remove();
+$(document).ready(function () {
+    fetchEmojiUnicodes();
+});
+
+// On clicking tabs
+$(document).on("click","ul.tabs li", function(){
+    const category = $(this).attr('data-tab');
+    $('ul.tabs li').removeClass('current');
+    $('.tab-content').removeClass('current');
+    populateEmojis(emojiUnicodeList[category]);
+    $(this).addClass('current');
+    $('#emoji-container').scrollTop(0);
+});
+
+// Adding shadow on scroll
+$('#emoji-container').on('scroll', function() {
+    if (!$('#emoji-container').scrollTop()) {
+        $('.container').removeClass('shadow')    
+    } else {
+        $('.container').addClass('shadow')
     }
-}
+})
 
 // Listing all the Emojis from the unicode list onto the view
 const populateEmojis = (list) => {
-    console.log(list);
     let emojiUnicodes = '';
     for(let i=0; i<list.length; i++) {
         if(!emojiUnicodes.includes(list[i].char)) {
             emojiUnicodes += list[i].char;
         }
     }
-    removeElementByClass('emoji-inner-container');
-    let div = document.createElement('div');
-    div.textContent = emojiUnicodes;
-    div.className = 'emoji-inner-container';
-    document.getElementById('emoji-container').appendChild(div);
+
+    document.getElementById('emoji-container').textContent = emojiUnicodes;
 
     twemoji.parse(document.getElementById('emoji-container'), {
         folder: 'svg',
@@ -38,7 +51,7 @@ const populateEmojis = (list) => {
     }
 }
 
-/* Fetching the unicodelist from
+/* Fetching the unicodelist from    
  * https://github.com/amio/emoji.json
  */
 const fetchEmojiUnicodes = () => {
@@ -46,7 +59,16 @@ const fetchEmojiUnicodes = () => {
     .then(res => res.json())
     .then((emojiList) => {
         emojiUnicodeList = emojiList;
-        populateEmojis(emojiList);
+        emojiUnicodeList = _.groupBy(emojiList, (emoji) => {
+            return emoji.category.substr(0, emoji.category.indexOf('(')).trim();
+        });
+
+        // Adding appropriate category tabs
+        for (const key in emojiUnicodeList) {
+            $('#tab-list').append('<li class="tab-link" data-tab="' + key +'">' + key + '</li>');
+        }
+        $('.tab-link').eq(0).click();
+        
     })
     .catch(() => {
         console.log('There was an issue while fetching the emoji list');
@@ -74,39 +96,3 @@ const fetchImg = url => {
         reader.readAsText(blob);
     });
 }
-
-// Debounce setup variables
-let typingTimer;
-let doneTypingInterval = 500;
-let searchInput = document.getElementById('search');
-
-// On keyup event listener
-searchInput.addEventListener('keyup', () => {
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(doneTyping, doneTypingInterval);
-});
-
-// After debounce function
-function doneTyping () {
-    const searchValue = searchInput.value;
-    if (searchValue) {
-        let filteredEmojiList = emojiUnicodeList.filter((element, index) =>  {
-            if (element.name.includes(searchValue) || element.category.includes(searchValue)) {
-                return true;
-            }
-            return false;
-        });
-        if (filteredEmojiList.length === 0) {
-            removeElementByClass('emoji-inner-container');
-            document.getElementById('empty-search').setAttribute('style', 'display: flex');
-        } else {
-            document.getElementById('empty-search').setAttribute('style', 'display:none');
-            populateEmojis(filteredEmojiList);
-        }
-    } else {
-        populateEmojis(emojiUnicodeList);
-    }
-}
-
-// Triggering unicode list call
-fetchEmojiUnicodes();
