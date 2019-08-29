@@ -4,15 +4,17 @@ body {
     text-align: center;
     overflow: hidden;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 #emoji-container {
+    overflow: auto;
+    padding: 0 10px;
     display: inline-flex;
-    max-height: 365px;
     flex-wrap: wrap;
     justify-content: flex-start;
     align-items: flex-start;
-    overflow: auto;
-    padding: 0 10px;
 }
 #emoji-container .emoji {
     width: 30px;
