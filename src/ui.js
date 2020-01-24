@@ -1,10 +1,22 @@
 import './ui.css'
 import _ from "lodash";
 import $ from "jquery";
+import * as mixpanel from 'mixpanel-figma';
+import { mixpanel_key } from '../keys.json';
 
 let emojiUnicodeList = [];
 
 $(document).ready(function () {
+    // disabling via config just in case
+    mixpanel.init(mixpanel_key, {
+        disable_cookie: true,
+        disable_persistence: true
+    })
+    parent.postMessage({
+        pluginMessage: {
+            type: 'check-mixpanel-user'
+        }
+    }, '*');
     fetchEmojiUnicodes();
 });
 
@@ -16,12 +28,13 @@ $(document).on("click","ul.tabs li", function(){
     populateEmojis(emojiUnicodeList[category]);
     $(this).addClass('current');
     $('#emoji-container').scrollTop(0);
+    mixpanel.track("Figmoji", {"Action": "Tab clicked: " + category});
 });
 
 // Adding shadow on scroll
 $('#emoji-container').on('scroll', function() {
     if (!$('#emoji-container').scrollTop()) {
-        $('.container').removeClass('shadow')    
+        $('.container').removeClass('shadow')
     } else {
         $('.container').addClass('shadow')
     }
@@ -51,7 +64,7 @@ const populateEmojis = (list) => {
     }
 }
 
-/* Fetching the unicodelist from    
+/* Fetching the unicodelist from
  * https://github.com/amio/emoji.json
  */
 const fetchEmojiUnicodes = () => {
@@ -68,7 +81,7 @@ const fetchEmojiUnicodes = () => {
             $('#tab-list').append('<li class="tab-link" data-tab="' + key +'">' + key + '</li>');
         }
         $('.tab-link').eq(0).click();
-        
+
     })
     .catch(() => {
         console.log('There was an issue while fetching the emoji list');
@@ -96,3 +109,19 @@ const fetchImg = url => {
         reader.readAsText(blob);
     });
 }
+
+// Function to recieve events from figma
+onmessage = e => {
+    if (!e.data) return;
+
+    const data = e.data.pluginMessage.data;
+    const type = e.data.pluginMessage.type;
+
+    if (type === 'USERID') {
+        mixpanel.identify(data);
+        mixpanel.track("Figmoji", {"Action": "Plugin Opened"});
+    }
+    if (type === 'INSERT_SUCCESSFUL') {
+        mixpanel.track("Figmoji", {"Action": "Emoji Inserted"});
+    }
+};
