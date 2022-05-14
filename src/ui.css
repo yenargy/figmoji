@@ -133,3 +133,8 @@ body {
 .tab-content.current {
     display: inherit;
 }
+
+.apple-toggle{
+    padding: 10px;
+    text-align: left;
+}

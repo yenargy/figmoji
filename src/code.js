@@ -1,9 +1,9 @@
 figma.showUI(__html__, { width: 280, height: 500 });
 
 figma.ui.onmessage = msg => {
-  if (msg.type === 'insert-image') {
+  if (msg.type === 'insert-image-svg') {
     const nodes = [];
-    const node = figma.createNodeFromSvg(msg.svg);
+    const node = figma.createNodeFromSvg(msg.source);
     const group = figma.group(node.children, figma.currentPage);
     node.remove();
     group.name = 'Emoji'
@@ -29,6 +29,13 @@ figma.ui.onmessage = msg => {
     figma.viewport.scrollAndZoomIntoView(nodes);
     figma.ui.postMessage({ type: 'INSERT_SUCCESSFUL' })
   }
+
+    if (msg.type === 'insert-image-png') {
+        const imageHash = figma.createImage(msg.source).hash
+        const rect = figma.createRectangle();
+        rect.fills = [{type: "IMAGE", scaleMode: "FIT", imageHash}]
+        figma.viewport.scrollAndZoomIntoView([rect]);
+    }
 
   if (msg.type === 'check-mixpanel-user') {
     getUserId();

@@ -60,7 +60,8 @@ const populateEmojis = (list) => {
     let imgs = document.getElementsByTagName("img");
     for (let i = 0; i < imgs.length; i++) {
         let src = imgs[i].src;
-        imgs[i].onclick = function() {fetchImg(src)};
+        let emoji = imgs[i].alt;
+        imgs[i].onclick = function() {fetchImg(src, emoji)};
     }
 }
 
@@ -91,23 +92,38 @@ const fetchEmojiUnicodes = () => {
 }
 
 // Asking figma to add selected emoji onto canvas
-const postMessage = (svg) => {
+const postMessage = (source, type) => {
+    console.debug('postMessage', {source, type})
     parent.postMessage({
         pluginMessage: {
-            type: 'insert-image',
-            svg,
+            type: `insert-image-${type}`,
+            source,
         }
     }, '*');
 }
 
 // Fetching svg code of selected Emoji
-const fetchImg = url => {
-    fetch(url).then(r => r.arrayBuffer()).then(buff => {
+const fetchImg = (url, emoji) => {
+    const isAppleEmoji = appleEmojiRequired()
+    const targetURL = isAppleEmoji ? `https://applemoji.vercel.app/${getAppleImage(emoji)}.png` : url
+    fetch(targetURL).then(r => r.arrayBuffer()).then(buff => {
+        if (isAppleEmoji) return postMessage(new Uint8Array(buff), 'png')
         let blob = new Blob([new Uint8Array(buff)], {type: "image/svg"});
         const reader = new FileReader()
-        reader.onload = () => postMessage(reader.result);
+        reader.onload = () => postMessage(reader.result, 'svg');
         reader.readAsText(blob);
     });
+}
+
+const appleEmojiRequired = () => document.getElementById('apple-emoji') && document.getElementById('apple-emoji').checked
+
+const getAppleImage = char => {
+    console.debug('getAppleImage', char)
+    const code = char.replace(/[\ufe00-\ufe0f\u200d]/g, '');
+    const name = [];
+    for (let i = 0; i < code.length; i++)
+        name.push(('0000' + char.charCodeAt(i).toString(16)).slice(-4));
+    return name.join('-')
 }
 
 // Function to recieve events from figma
