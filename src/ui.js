@@ -8,7 +8,7 @@ let emojiUnicodeList = [];
 
 $(document).ready(function () {
     // disabling via config just in case
-    mixpanel.init(mixpanel_key, {
+    if (mixpanel_key) mixpanel.init(mixpanel_key, {
         disable_cookie: true,
         disable_persistence: true
     })
@@ -28,7 +28,7 @@ $(document).on("click","ul.tabs li", function(){
     populateEmojis(emojiUnicodeList[category]);
     $(this).addClass('current');
     $('#emoji-container').scrollTop(0);
-    mixpanel.track("Figmoji", {"Action": "Tab clicked: " + category});
+    if (mixpanel_key) mixpanel.track("Figmoji", {"Action": "Tab clicked: " + category});
 });
 
 // Adding shadow on scroll
@@ -117,11 +117,13 @@ onmessage = e => {
     const data = e.data.pluginMessage.data;
     const type = e.data.pluginMessage.type;
 
-    if (type === 'USERID') {
-        mixpanel.identify(data);
-        mixpanel.track("Figmoji", {"Action": "Plugin Opened"});
-    }
-    if (type === 'INSERT_SUCCESSFUL') {
-        mixpanel.track("Figmoji", {"Action": "Emoji Inserted"});
+    if (mixpanel_key) {
+        if (type === 'USERID') {
+            mixpanel.identify(data);
+            mixpanel.track("Figmoji", {"Action": "Plugin Opened"});
+        }
+        if (type === 'INSERT_SUCCESSFUL') {
+            mixpanel.track("Figmoji", {"Action": "Emoji Inserted"});
+        }
     }
 };

@@ -4,7 +4,8 @@
   "description": "emojis for your designs",
   "main": "code.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npx webpack --mode=production",
+    "watch": "npx webpack --mode=development --watch"
   },
   "keywords": [
     "emoji",
