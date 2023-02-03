@@ -35,13 +35,13 @@ const populateEmojis = (list) => {
             emojiUnicodes += list[i].char;
         }
     }
-
     document.getElementById('emoji-container').textContent = emojiUnicodes;
 
     twemoji.parse(document.getElementById('emoji-container'), {
         folder: 'svg',
         ext: '.svg',
-        size: 128
+        size: 128,
+        base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
     });
 
     let imgs = document.getElementsByTagName("img");
