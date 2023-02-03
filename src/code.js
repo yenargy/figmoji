@@ -29,10 +29,6 @@ figma.ui.onmessage = msg => {
     figma.viewport.scrollAndZoomIntoView(nodes);
     figma.ui.postMessage({ type: 'INSERT_SUCCESSFUL' })
   }
-
-  if (msg.type === 'check-mixpanel-user') {
-    getUserId();
-  }
 };
 
 const getUserId = async () => {
